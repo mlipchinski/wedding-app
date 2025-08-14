@@ -1,15 +1,13 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-export class ErrorMiddleware {
-    constructor() {
-    }
+export function notFound(_req: Request, res: Response) {
+    res.status(404).json({ error: 'NotFound' });
+}
 
-    public static handleNotFound(req: express.Request, res: express.Response, _next: express.NextFunction) {
-        res.status(404).json({ error: "Not Found" });
+export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
+    if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.error(err);
     }
-
-    public static handleGeneralError(err: any, res: express.Response, _next: express.NextFunction) {
-        console.error(err.stack);
-        res.status(err.status || 500).json({ error: err.message || "Internal Server Error" });
-    }
+    res.status(500).json({ error: 'InternalServerError' });
 }
