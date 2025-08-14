@@ -13,3 +13,27 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum InquiryStatus {
+  NEW
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+model Inquiry {
+  id               String        @id @default(cuid())
+  name             String
+  email            String
+  phone            String?       @db.VarChar(30)
+  guestCount       Int
+  preferredLocation String?
+  mood             String?       
+  requestedDate    DateTime?
+  budgetMin        Int?
+  budgetMax        Int?
+  message          String?       @db.Text
+  status           InquiryStatus @default(NEW)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
