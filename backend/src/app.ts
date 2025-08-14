@@ -1,12 +1,12 @@
 import express from "express";
-import morgan from "morgan";
+
 import path from "path";
 import compression from "compression";
-import { errorHandler, notFound } from "./middleware/error";
-import { validate } from "./middleware/validate";
+import cookieParser from "cookie-parser";
+import { error } from "./middleware/error";
 import { security } from "./middleware/security";
 import { routes } from "./routes";
-import cookieParser from "cookie-parser";
+import { logging } from "./middleware/logging";
 
 export const initApp = (): express.Application => {
     const app: express.Application = express();
@@ -14,7 +14,7 @@ export const initApp = (): express.Application => {
     const clientDist = path.resolve(__dirname, "../../frontend/dist");
     app.use(express.static(clientDist));
 
-    app.use(morgan("dev"));
+    app.use(...logging);
     app.use(...security);
 
     app.use(express.json());
@@ -24,8 +24,7 @@ export const initApp = (): express.Application => {
 
     app.use('/api', routes);
 
-    app.use(errorHandler);
-    app.use(notFound);
+    app.use(...error);
 
     return app;
 };
