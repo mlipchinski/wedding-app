@@ -2,24 +2,18 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import path from "path";
 import { ErrorMiddleware } from "./middleware/error";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
+import { env } from "./config/env";
 
 export class App {
-    
-    private app: express.Application;
 
-    private readonly PORT: number = Number(process.env.PORT) || 4000;;
-    private readonly CLIENT_ORIGIN: string = process.env.CLIENT_ORIGIN || "http://localhost:3000";
-    private readonly RATE_LIMIT_WINDOW_MS: number =process.env.RATE_LIMIT_WINDOW_MS ? Number(process.env.RATE_LIMIT_WINDOW_MS) : 15 * 60 * 1000;
-    private readonly RATE_LIMIT_MAX: number = process.env.RATE_LIMIT_MAX ? Number(process.env.RATE_LIMIT_MAX) : 100;
+    private app: express.Application;
+    private readonly ENV = env;
 
     constructor() {
-        dotenv.config();
-
         this.initApp();
         this.initMiddleware();
         this.initRoutes();
@@ -38,7 +32,7 @@ export class App {
 
         // CORS
         this.app.use(cors({
-            origin: process.env.CLIENT_ORIGIN || this.CLIENT_ORIGIN,
+            origin: this.ENV.clientOrigin,
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: ['Content-Type', 'Authorization']
         }));
@@ -49,8 +43,8 @@ export class App {
 
         // Rate limitt
         this.app.use(rateLimit({
-            windowMs: this.RATE_LIMIT_WINDOW_MS,
-            max: this.RATE_LIMIT_MAX,
+            windowMs: this.ENV.rateLimitWindowMs,
+            max: this.ENV.rateLimitMax,
         }));
 
         this.app.use(compression())
@@ -72,8 +66,8 @@ export class App {
     }
 
     public startServer(): void {
-        this.app.listen(this.PORT, () => {
-            console.log(`Server listening at PORT: ${this.PORT}`);
+        this.app.listen(this.ENV.port, () => {
+            console.log(`Server listening at PORT: ${this.ENV.port}`);
         });
     }
 }
