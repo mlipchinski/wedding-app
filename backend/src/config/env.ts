@@ -12,4 +12,6 @@ export const env = {
     jwtExpiresIn: n.JWT_EXPIRES_IN ?? '1d',
     rateLimitWindowMs: Number(n.RATE_LIMIT_WINDOW_MS ?? 15 * 60 * 1000),
     rateLimitMax: Number(n.RATE_LIMIT_MAX ?? 100),
+    emailVerifyJwtSecret: n.EMAIL_VERIFY_JWT_SECRET,
+    emailVerifyJwtExpiresIn: n.EMAIL_VERIFY_JWT_EXPIRES_IN ?? '1d',
 };

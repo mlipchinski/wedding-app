@@ -52,6 +52,7 @@ model User {
   role      UserRole  @default(USER) // e.g., "admin", "user"
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  emailVerifiedAt    DateTime?
   Inquiry   Inquiry[]
 }
 
