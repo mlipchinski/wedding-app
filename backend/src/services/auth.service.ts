@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
 import { User, Prisma } from '@prisma/client'
 import { prisma } from '../db/client';
-import { signJwt, decodeJwt } from '../utils/auth';
-import { UserLogin } from '@shared-types/User';
+import { signJwt, verifyJwt } from '../utils/auth';
+import { UserLogin } from '@shared/types';
+import { sendEmail, verifyEmailTemplate } from 'src/utils/mailer';
 
 type CreateUserData = Prisma.UserCreateInput;
 
@@ -37,7 +38,14 @@ export const loginUser = async (data: UserLogin) => {
     return signJwt(user);
 }
 
-export const verifyEmail = async (userID: number) => {
+export const verifyEmail = async (token) => {
+    const decoded: User = verifyJwt(token, true);
+    if (!decoded) {
+        throw new Error('Invalid or expired token');
+    }
+
+    const userID = Number(decoded.userID);
+
     let user = await prisma.user.findUnique({
         where: { userID: userID },
     });
@@ -59,14 +67,17 @@ export const verifyEmail = async (userID: number) => {
 }
 
 export const sendVerificationEmail = async (user: User): Promise<boolean> => {
-    //TODO
-
-    const token = signJwt({ userID: user.userID }, true);
-    const verificationLink = `https://yourapp.com/verify-email/${user.userID}?token=${token}`;
+    const token = signJwt(user, true);
+    const link = `${process.env.APP_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
     
-    // Send email logic goes here (e.g., using nodemailer or any other service)
-    
-    console.log(`Verification link for ${user.email}: ${verificationLink}`);
+    await sendEmail({
+        to: user.email,
 
-    return true; // Return true if email sent successfully
+        subject: 'Email Verification',
+        html: verifyEmailTemplate(link),
+    });
+    
+    console.log(`Verification link for ${user.email}: ${link}`);
+
+    return true; 
 }

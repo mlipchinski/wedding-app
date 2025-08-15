@@ -8,4 +8,4 @@ export const authRoute = Router();
 
 authRoute.post('/register', validate(createUserRegistrationSchema), createUser);
 authRoute.post('/login', validate(createUserLoginSchema), userLogin);
-authRoute.get('/verify-email/:userID', userVerifyEmail);
+authRoute.get('/verify-email', userVerifyEmail);

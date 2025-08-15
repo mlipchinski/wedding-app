@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import * as auth from '../services/auth.service';
+import { User } from '@prisma/client';
 
 export const createUser = async (req: Request, res: Response) => {
-    const created = await auth.createUser(req.body);
+    const created: User = await auth.createUser(req.body);
 
     if (!created) {
         return res.status(400).json({ error: 'User creation failed' });
@@ -19,13 +20,12 @@ export const userLogin = async (req: Request, res: Response) => {
 };
 
 export const userVerifyEmail = async (req: Request, res: Response) => {
-    const userID = parseInt(req.params.userID, 10);
-    if (isNaN(userID)) {
-        return res.status(400).json({ error: 'Invalid user ID' });
-    }
+    const token = String(req.query.token || "");
+    if (!token)
+        return res.status(400).send("Missing token");
 
     try {
-        const updatedUser = await auth.verifyEmail(userID);
+        const updatedUser = await auth.verifyEmail(token);
         res.status(200).json(updatedUser);
     } catch (error) {
         res.status(400).json({ error: error.message });
