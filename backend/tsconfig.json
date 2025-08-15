@@ -1,29 +1,37 @@
-// tsconfig.json
+// app/backend/tsconfig.json
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
+    "module": "CommonJS",
     "outDir": "dist",
-    "rootDir": "src",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "strict": false,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "types": [
       "node",
       "jest"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": [
+        "../shared/*"
+      ],
+      "@shared-types/*": [
+        "../shared/types/*"
+      ]
+    }
   },
   "include": [
     "src",
-    "tsconfig.json",
-    "jest.config.js"
+    "../shared/types"
   ],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "../frontend"
   ]
 }

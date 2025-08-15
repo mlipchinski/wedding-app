@@ -20,19 +20,39 @@ enum InquiryStatus {
   REJECTED
 }
 
-model Inquiry {
-  id               String        @id @default(cuid())
-  name             String
-  email            String
-  phone            String?       @db.VarChar(30)
-  guestCount       Int
-  preferredLocation String?
-  mood             String?       
-  requestedDate    DateTime?
-  budgetMin        Int?
-  budgetMax        Int?
-  message          String?       @db.Text
-  status           InquiryStatus @default(NEW)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+enum UserRole {
+  ADMIN
+  USER
 }
+
+model Inquiry {
+  id                String        @id @default(cuid())
+  name              String
+  email             String
+  phone             String?       @db.VarChar(30)
+  guestCount        Int
+  preferredLocation String?
+  mood              String?
+  requestedDate     DateTime?
+  budgetMin         Int?
+  budgetMax         Int?
+  message           String?       @db.Text
+  status            InquiryStatus @default(NEW)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  userId            Int?
+  user              User?         @relation(fields: [userId], references: [userID])
+}
+
+model User {
+  userID    Int       @id @default(autoincrement())
+  userName  String    @unique
+  password  String
+  email     String    @unique
+  role      UserRole  @default(USER) // e.g., "admin", "user"
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Inquiry   Inquiry[]
+}
+
+

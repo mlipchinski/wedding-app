@@ -1,5 +1,4 @@
 import express from "express";
-
 import path from "path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
@@ -19,7 +18,7 @@ export const initApp = (): express.Application => {
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    app.use(compression())
+    app.use(compression());
     app.use(cookieParser());
 
     app.use('/api', routes);

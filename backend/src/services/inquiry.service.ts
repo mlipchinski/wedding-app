@@ -1,35 +1,16 @@
+import { Prisma, Inquiry, InquiryStatus } from '@prisma/client';
 import { prisma } from '../db/client';
-import { InquiryStatus } from '@prisma/client';
 
-export async function createInquiry(data: {
-  name: string;
-  email: string;
-  phone?: string;
-  guestCount: number;
-  preferredLocation?: string;
-  mood?: string;
-  requestedDate?: string;
-  budgetMin?: number;
-  budgetMax?: number;
-  message?: string;
-}) {
+type CreateInquiryData = Prisma.InquiryCreateInput;
+
+export const createInquiry = async (data: CreateInquiryData): Promise<Inquiry> => {
   return prisma.inquiry.create({
     data: {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      guestCount: data.guestCount,
-      preferredLocation: data.preferredLocation,
-      mood: data.mood,
-      requestedDate: data.requestedDate ? new Date(data.requestedDate) : null,
-      budgetMin: data.budgetMin,
-      budgetMax: data.budgetMax,
-      message: data.message,
-      status: InquiryStatus.NEW
-    }
+      ...data
+    },
   });
 }
 
-export async function listInquiries() {
+export const listInquiries = async (): Promise<Inquiry[]> => {
   return prisma.inquiry.findMany({ orderBy: { createdAt: 'desc' } });
 }
